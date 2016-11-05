@@ -1,42 +1,76 @@
 (ns site.core
-  (:require [forest.macros :refer-macros [defstylesheet]]
-            [forest.class-names :refer [class-names]]
-            [enfocus.core :as ef]
+  (:require [enfocus.core :as ef]
             [enfocus.events :as events]
             [enfocus.effects :as effects]
-            [site.styles :as styles])
+            [site.actions :as actions])
+
  (:require-macros [enfocus.macros :as em]))
 
 (def width (.-innerWidth js/window))
-(def width-threshold 620)
-
-(styles/construct-stylesheet (if (> width-threshold
-                                    width)
-                                    "100%"
-                                    (styles/even-width width 3)))
+(def width-threshold 400)
 
 (def heading [[:div
-               {:class styles/h2}
+               {:class "h2"}
                "Hi, I'm Mike!"]
              [:div
-               {:class styles/h2}
+               {:class "h2"}
                 "Test!"]
              [:div
-               {:class styles/contact}
+               {:class "contact"}
                "Contact info!"]])
 
+(def content [[:div
+              {:class "h2"}
+              "Some content"]
+              [:div
+                {:class "h2"}
+                 "More content!"]
+              [:div
+                {:class "h2"}
+                "Awesome content!"]
+              [:div
+                {:class "h2"}
+                "Awesome content!"]])
+
 (defn start []
-  ;;draw our main document
-    (ef/at ["body"] (ef/content (ef/html [:div {:id "heading" :class styles/row}]))
+    ;;draw our main document
+    (ef/at ["body"]
+           (ef/do->
+            (ef/content
+               (ef/html [:div {:id "heading" :class "row"}])
+               (ef/html [:div {:id "content" :class "content"}])))
            ["#heading"]
-                (ef/content
-                    (map #(ef/html
-                       [:div {:class styles/row-el
-                              :id "resize"} %]) heading)))
+              (ef/content
+                  (map #(ef/html
+                    [:div {:class "row-el"
+                           :id "resizeheading"} %]) heading))
+           ["#content"]
+               (ef/content
+                   (map #(ef/html
+                     [:div {:class "row-el"
+                            :id "resizecontent"} %]) content))
+           ["* #resizeheading"]
+               (ef/set-style :width
+                             (str (actions/get-width-setting (count heading)
+                                                                width
+                                                                width-threshold)
+                                                                "px"))
+           ["* #resizecontent"]
+               (ef/set-style :width
+                             (str (actions/get-width-setting (count content)
+                                                                width
+                                                                width-threshold))
+                                                                "px"))
 
     ;;allows dynamic resizing -- no flex-box!
     (ef/at js/window
-        (events/listen :resize #(styles/squeeze "* #resize" width-threshold
-                                         (.-innerWidth js/window)))))
+        (events/listen :resize #(do (actions/squeeze "* #resizeheading"
+                                                     width-threshold
+                                                     (.-innerWidth js/window)
+                                                     (count heading))
+                                    (actions/squeeze "* #resizecontent"
+                                                     width-threshold
+                                                     (.-innerWidth js/window)
+                                                     (count content))))))
 
 (set! (.-onload js/window) start)

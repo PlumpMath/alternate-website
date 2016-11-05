@@ -9,8 +9,7 @@
                   [adzerk/boot-cljs               "1.7.48-5"]
                   [com.cemerick/piggieback        "0.2.1"  :scope "test"]
                   [weasel                         "0.7.0"  :scope "test"]
-                  [enfocus                        "2.1.1"]
-                  [forest                         "0.2.0"]]
+                  [enfocus                        "2.1.1"]]
 
   :source-paths  #{"src"}
   :asset-paths   #{"assets"})
@@ -23,6 +22,6 @@
 (deftask dev []
   (comp
     (watch)
-    (cljs :optimizations :advanced)
+    (cljs :optimizations :none)
     (reload)
     (serve :port 8000)))
