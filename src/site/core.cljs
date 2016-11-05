@@ -10,14 +10,12 @@
 (def width-threshold 400)
 
 (def heading [[:div
-               {:class "h2"}
-               "Hi, I'm Mike!"]
-             [:div
-               {:class "h2"}
-                "Test!"]
+               {:class "h1"}
+               [:div {:class "text-box"} "Hi, I'm Mike!"
+               [:p "I'm an Ottawa-based person."]]]
              [:div
                {:class "contact"}
-               "Contact info!"]])
+               [:div {:class "text-box"} "contact!"]]])
 
 (def content [[:div
               {:class "h2"}
@@ -51,16 +49,20 @@
                             :id "resizecontent"} %]) content))
            ["* #resizeheading"]
                (ef/set-style :width
-                             (str (actions/get-width-setting (count heading)
-                                                                width
-                                                                width-threshold)
-                                                                "px"))
+                             (str
+                              (- (actions/get-width-setting
+                                  (count heading)
+                                          width
+                                          width-threshold) 0.4)
+                                          "px"))
            ["* #resizecontent"]
                (ef/set-style :width
-                             (str (actions/get-width-setting (count content)
-                                                                width
-                                                                width-threshold))
-                                                                "px"))
+                             (str
+                              (- (actions/get-width-setting
+                                  (count content)
+                                          width
+                                          width-threshold) 0.4)
+                                          "px")))
 
     ;;allows dynamic resizing -- no flex-box!
     (ef/at js/window

@@ -22,6 +22,6 @@
 (deftask dev []
   (comp
     (watch)
-    (cljs :optimizations :none)
+    (cljs :optimizations :advanced)
     (reload)
     (serve :port 8000)))
